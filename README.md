@@ -1,5 +1,5 @@
 # gosmtp
-golang simple smtp server
+golang mock smtp server for local testing - writes sent mail to local directory
 - depends on github.com/corpix/smtpd
 ## imapclient
 golang imap client
