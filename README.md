@@ -1,3 +1,5 @@
+![Go](https://github.com/wlanboy/gosmtp/workflows/Go/badge.svg?branch=master)
+
 # gosmtp
 golang mock smtp server for local testing - writes sent mail to local directory
 - depends on github.com/corpix/smtpd
