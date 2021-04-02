@@ -46,7 +46,14 @@ golang smtp client
 * GOOS=linux GOARCH=386 go build (386 needed for busybox)
 * GOOS=linux GOARCH=arm GOARM=6 go build (Raspberry Pi build)
 * GOOS=linux GOARCH=arm64 go build (Odroid C2 build)
-* docker build -t smtp .
+* docker build -t smtpmock .
 
 # run docker container
-* docker run -d -p 2525:25 smtp
+* cd smtp
+* docker run -d --name smtpmock -p 1025:1025 smtpmock:latest
+* docker stop smtpmock && docker rm smtpmock
+
+# test smtp mock server
+* sudo apt-get install swaks
+* echo "This is the email body" | swaks --to "me@test.com" --from "you@test.com" --server 127.0.0.1 --port 1025
+* docker logs smtpmock
