@@ -25,7 +25,7 @@ golang smtp client
 * go get -d -v
 * go build
 
-# run server
+# run mail mock server
 * cd smtp
 * go run smtp.go
 
@@ -41,3 +41,12 @@ golang smtp client
 * cd smtp
 * go get -u github.com/go-delve/delve/cmd/dlv
 * dlv debug ./smtp
+
+# dockerize 
+* GOOS=linux GOARCH=386 go build (386 needed for busybox)
+* GOOS=linux GOARCH=arm GOARM=6 go build (Raspberry Pi build)
+* GOOS=linux GOARCH=arm64 go build (Odroid C2 build)
+* docker build -t smtp .
+
+# run docker container
+* docker run -d -p 2525:25 smtp
