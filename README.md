@@ -1,4 +1,4 @@
-![Go](https://github.com/wlanboy/gosmtp/workflows/Go/badge.svg?branch=master)
+![Go](https://github.com/wlanboy/gosmtp/workflows/Go/badge.svg?branch=main)
 
 # gosmtp
 golang mock smtp server for local testing - writes sent mail to local directory
