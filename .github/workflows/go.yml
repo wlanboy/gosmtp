@@ -24,7 +24,12 @@ jobs:
 
     - name: Get dependencies
       run: |
-        go get -v -t -d ./...
+        cd smtp && go get -v -t -d 
+        cd ..
+        cd imapclient && go get -v -t -d 
+        cd ..
+        cd smtpclient && go get -v -t -d 
+        cd ..
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
