@@ -49,7 +49,8 @@ golang smtp client
 
 # run docker container
 * cd smtp
-* docker run -d --name smtpmock -p 1025:1025 smtpmock:latest
+* docker run --rm --name smtpmock -p 1025:1025 -p 1143:1143 smtpmock:latest
+* docker run -d --name smtpmock -p 1025:1025 -p 1143:1143 smtpmock:latest
 * docker stop smtpmock && docker rm smtpmock
 
 # test smtp mock server
