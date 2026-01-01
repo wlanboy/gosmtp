@@ -1,8 +1,7 @@
-![Go](https://github.com/wlanboy/gosmtp/workflows/Go/badge.svg?branch=main)
-
 # gosmtp
-golang mock smtp server for local testing - writes sent mail to local directory
-- depends on github.com/corpix/smtpd
+golang mock smtp and imap server for local testing - writes sent mail to local directory
+
+
 ## imapclient
 golang imap client
 - depends on github.com/emersion/go-imap
