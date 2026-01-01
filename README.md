@@ -12,17 +12,17 @@ golang smtp client
 
 # build server
 * cd smtp
-* go get -d -v
+* go get -v
 * go build
 
 # build imapclient
 * cd smtp/imapclient
-* go get -d -v
+* go get -v
 * go build
 
 # build smtpclient
 * cd smtp/smtpclient
-* go get -d -v
+* go get -v
 * go build
 
 # run mail mock server
