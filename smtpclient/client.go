@@ -1,85 +1,90 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
 	"net/mail"
 	"net/smtp"
+	"strings"
 )
 
 func main() {
+	mailserver := "127.0.0.1:1025"
+	username := "testuser"
+	password := "testpass"
 
-	mailserver := "mailserver:465"
-	username := ""
-	userpassowrd := ""
-	hostname, _, _ := net.SplitHostPort(mailserver)
+	host, port, err := net.SplitHostPort(mailserver)
+	if err != nil {
+		log.Fatalf("invalid mailserver address: %v", err)
+	}
 
-	from := mail.Address{Name: username, Address: username + "@" + hostname}
-	to := mail.Address{Name: username, Address: username + "@" + hostname}
-	subj := "This is the email subject"
-	body := "This is an example body.\n With two lines."
+	from := mail.Address{Name: username, Address: username + "@" + host}
+	to := mail.Address{Name: username, Address: username + "@" + host}
 
-	headers := make(map[string]string)
-	headers["From"] = from.String()
-	headers["To"] = to.String()
-	headers["Subject"] = subj
+	subject := "This is the email subject"
+	body := "This is an example body.\nWith two lines."
 
-	message := ""
+	msg := buildMessage(from, to, subject, body)
+
+	fmt.Println("Sending via plain SMTP...")
+	if err := sendViaPlainSMTP(host, port, username, password, from, to, msg); err != nil {
+		log.Fatal("SMTP failed:", err)
+	}
+
+	fmt.Println("Email sent successfully via plain SMTP")
+}
+
+func buildMessage(from, to mail.Address, subject, body string) string {
+	headers := map[string]string{
+		"From":         from.String(),
+		"To":           to.String(),
+		"Subject":      subject,
+		"MIME-Version": "1.0",
+		"Content-Type": "text/plain; charset=UTF-8",
+	}
+
+	var sb strings.Builder
 	for k, v := range headers {
-		message += fmt.Sprintf("%s: %s\r\n", k, v)
+		sb.WriteString(fmt.Sprintf("%s: %s\r\n", k, v))
 	}
-	message += "\r\n" + body
+	sb.WriteString("\r\n" + body)
 
-	tlsconfig := &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         hostname,
-	}
+	return sb.String()
+}
 
-	auth := smtp.PlainAuth(
-		"",
-		username,
-		userpassowrd,
-		hostname,
-	)
-
-	smtpconnection, err := tls.Dial("tcp", mailserver, tlsconfig)
+func sendViaPlainSMTP(host, port, username, password string, from, to mail.Address, msg string) error {
+	client, err := smtp.Dial(host + ":" + port)
 	if err != nil {
-		log.Panic(err)
+		return err
+	}
+	defer client.Close()
+
+	// AUTH LOGIN / AUTH PLAIN
+	auth := smtp.PlainAuth("", username, password, host)
+	if err := client.Auth(auth); err != nil {
+		return err
 	}
 
-	smtpclient, err := smtp.NewClient(smtpconnection, hostname)
+	// MAIL FROM
+	if err := client.Mail(from.Address); err != nil {
+		return err
+	}
+
+	// RCPT TO
+	if err := client.Rcpt(to.Address); err != nil {
+		return err
+	}
+
+	// DATA
+	w, err := client.Data()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
-	if err = smtpclient.Auth(auth); err != nil {
-		log.Panic(err)
+	if _, err := w.Write([]byte(msg)); err != nil {
+		return err
 	}
 
-	if err = smtpclient.Mail(from.Address); err != nil {
-		log.Panic(err)
-	}
-
-	if err = smtpclient.Rcpt(to.Address); err != nil {
-		log.Panic(err)
-	}
-
-	datawriter, err := smtpclient.Data()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	_, err = datawriter.Write([]byte(message))
-	if err != nil {
-		log.Panic(err)
-	}
-
-	err = datawriter.Close()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	smtpclient.Quit()
+	return w.Close()
 }
