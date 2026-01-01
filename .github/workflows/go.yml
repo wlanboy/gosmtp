@@ -38,6 +38,9 @@ jobs:
     - name: Build server
       run: cd smtp && go build -v .
 
+    - name: Test server
+      run: cd smtp && go test -v .
+
     - name: Build imap client
       run: cd imapclient && go build -v .
       
