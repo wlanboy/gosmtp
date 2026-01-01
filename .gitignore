@@ -15,3 +15,6 @@
 # vendor/
 smtp/smtp
 smtp/mails/
+imapclient/imapclient
+smtpclient/smtpclient
+
