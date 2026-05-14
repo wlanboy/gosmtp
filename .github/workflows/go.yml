@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.25
+        go-version: 1.26
       id: go
 
     - name: Check out code into the Go module directory
@@ -24,11 +24,11 @@ jobs:
 
     - name: Get dependencies
       run: |
-        cd smtp && go get -v -t
+        cd smtp && go get -t
         cd ..
-        cd imapclient && go get -v -t
+        cd imapclient && go get -t
         cd ..
-        cd smtpclient && go get -v -t
+        cd smtpclient && go get -t
         cd ..
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
