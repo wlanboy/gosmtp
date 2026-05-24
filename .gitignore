@@ -17,3 +17,5 @@ smtp/smtp
 smtp/mails/
 imapclient/imapclient
 smtpclient/smtpclient
+server/mails/
+server/.env
