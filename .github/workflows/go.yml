@@ -6,43 +6,43 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: 1.26
-      id: go
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: |
+            server/go.sum
+            imapclient/go.sum
+            smtpclient/go.sum
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v6
+      - name: Vet server
+        working-directory: server
+        run: go vet ./...
 
-    - name: Get dependencies
-      run: |
-        cd smtp && go get -t
-        cd ..
-        cd imapclient && go get -t
-        cd ..
-        cd smtpclient && go get -t
-        cd ..
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+      - name: Test server
+        working-directory: server
+        run: go test -v -race ./...
 
-    - name: Build server
-      run: cd smtp && go build -v .
+      - name: Build server
+        working-directory: server
+        run: go build -v ./...
 
-    - name: Test server
-      run: cd smtp && go test -v .
+      - name: Build imapclient
+        working-directory: imapclient
+        run: go build -v ./...
 
-    - name: Build imap client
-      run: cd imapclient && go build -v .
-      
-    - name: Build smtp client
-      run: cd smtpclient && go build -v .
+      - name: Build smtpclient
+        working-directory: smtpclient
+        run: go build -v ./...
